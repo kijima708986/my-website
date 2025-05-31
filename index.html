@@ -2,34 +2,139 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>簡単な問題集サイト</title>
+  <title>Python 練習問題</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>クイズ：HTMLの基本</h1>
+  <div id="quiz-container"></div>
+  <div id="result-box" class="quiz-box" style="display:none;"></div>
 
-    <div class="quiz">
-      <p class="question">Q1. HTMLの文書の種類を宣言するタグはどれ？</p>
-      <ul class="choices">
-        <li>&lt;head&gt;</li>
-        <li>&lt;meta&gt;</li>
-        <li>&lt;!DOCTYPE html&gt;</li>
-        <li>&lt;html&gt;</li>
-      </ul>
-      <p class="answer">正解：&lt;!DOCTYPE html&gt;</p>
-    </div>
+  <script>
+    const quizzes = [
+      {
+        question: "Pythonでリストの要素数を取得する関数はどれ？",
+        choices: ["count()", "len()", "size()", "length()"],
+        answer: "len()",
+        explanation: "リストの要素数を取得する標準関数です。"
+      },
+      {
+        question: "Pythonで変数に整数を代入する正しい方法は？",
+        choices: ["int a = 5", "a := 5", "a = 5", "let a = 5"],
+        answer: "a = 5",
+        explanation: "Pythonでは代入に = を使用します。"
+      },
+      {
+        question: "文字列を整数に変換する関数はどれ？",
+        choices: ["str()", "int()", "float()", "bool()"],
+        answer: "int()",
+        explanation: "int() は文字列や小数を整数に変換します。"
+      },
+      {
+        question: "リストの末尾に要素を追加する関数はどれ？",
+        choices: ["insert()", "extend()", "add()", "append()"],
+        answer: "append()",
+        explanation: "append() はリストの末尾に要素を追加します。"
+      },
+      {
+        question: "Pythonの繰り返し処理に使われる構文はどれ？",
+        choices: ["repeat", "loop", "for", "foreach"],
+        answer: "for",
+        explanation: "for文はPythonの標準的な繰り返し構文です。"
+      },
+      {
+        question: "関数を定義するためのキーワードはどれ？",
+        choices: ["function", "define", "def", "fn"],
+        answer: "def",
+        explanation: "def を使って関数を定義します。"
+      },
+      {
+        question: "条件分岐に使うキーワードはどれ？",
+        choices: ["when", "if", "check", "case"],
+        answer: "if",
+        explanation: "if 文は条件に応じた処理を行うために使います。"
+      },
+      {
+        question: "Pythonで小数を表すデータ型はどれ？",
+        choices: ["int", "str", "float", "decimal"],
+        answer: "float",
+        explanation: "float は小数を扱うデータ型です。"
+      },
+      {
+        question: "リストの特定の要素を削除する関数はどれ？",
+        choices: ["remove()", "delete()", "pop()", "cut()"],
+        answer: "remove()",
+        explanation: "remove() は指定した値の要素を削除します。"
+      },
+      {
+        question: "Pythonでコメントを書くには？",
+        choices: ["-- コメント", "// コメント", "# コメント", "/* コメント */"],
+        answer: "# コメント",
+        explanation: "# を使ってコメントを記述します。"
+      }
+    ];
 
-    <div class="quiz">
-      <p class="question">Q2. Webページの見出しを表すタグはどれ？</p>
-      <ul class="choices">
-        <li>&lt;p&gt;</li>
-        <li>&lt;h1&gt;</li>
-        <li>&lt;div&gt;</li>
-        <li>&lt;span&gt;</li>
-      </ul>
-      <p class="answer">正解：&lt;h1&gt;</p>
-    </div>
-  </div>
+    let correctCount = 0;
+    let answeredCount = 0;
+
+    const container = document.getElementById("quiz-container");
+    const resultBox = document.getElementById("result-box");
+
+    quizzes.forEach((quiz, index) => {
+      const box = document.createElement("div");
+      box.className = "quiz-box";
+
+      const q = document.createElement("div");
+      q.className = "question";
+      q.innerText = `${index + 1}問目 ${quiz.question}`;
+      box.appendChild(q);
+
+      const choiceDiv = document.createElement("div");
+      choiceDiv.className = "choices";
+
+      quiz.choices.forEach(choice => {
+        const btn = document.createElement("button");
+        btn.innerText = choice;
+        btn.onclick = () => checkAnswer(btn, choice === quiz.answer, explanationDiv, quiz.answer, quiz.explanation, choiceDiv);
+        choiceDiv.appendChild(btn);
+      });
+
+      const explanationDiv = document.createElement("div");
+      explanationDiv.className = "answer";
+
+      box.appendChild(choiceDiv);
+      box.appendChild(explanationDiv);
+      container.appendChild(box);
+    });
+
+    function checkAnswer(btn, isCorrect, answerBox, answer, explanation, choiceDiv) {
+      if (answerBox.classList.contains("show")) return;
+      answerBox.classList.add("show");
+      const buttons = choiceDiv.querySelectorAll("button");
+      buttons.forEach(button => {
+        button.disabled = true;
+        if (button.innerText.trim() === answer) {
+          button.classList.add("correct");
+        } else if (button === btn && !isCorrect) {
+          button.classList.add("incorrect");
+        }
+      });
+
+      if (isCorrect) {
+        correctCount++;
+        answerBox.className = "answer correct show";
+        answerBox.innerHTML = `正解は <strong>${answer}</strong> です。${explanation}`;
+      } else {
+        answerBox.className = "answer incorrect show";
+        answerBox.innerHTML = `<strong>不正解です。</strong> 正解は <strong>${answer}</strong> です。${explanation}`;
+      }
+
+      answeredCount++;
+      if (answeredCount === quizzes.length) {
+        resultBox.style.display = "block";
+        resultBox.innerHTML = `<h2>結果</h2><p>10問中 <strong>${correctCount}問正解</strong> です。</p>`;
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
+    }
+  </script>
 </body>
 </html>
