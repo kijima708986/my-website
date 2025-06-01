@@ -2,139 +2,218 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Python 練習問題</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Pythonクイズ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 24px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .quiz-box {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin: 0 auto 3px auto;
+      max-width: 100%;
+    }
+
+    .question {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .option-button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      font-size: 18px;
+      background: #ecf0f1;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.3s, transform 0.1s;
+    }
+
+    .option-button:hover {
+      background: #dfe6e9;
+      transform: scale(1.01);
+    }
+
+    .option-button.correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+      font-weight: bold;
+    }
+
+    .option-button.incorrect {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+      color: #721c24;
+      font-weight: bold;
+    }
+
+    .feedback {
+      font-size: 16px;
+      margin-top: 10px;
+      padding: 8px;
+      border-left: 4px solid #999;
+    }
+
+    .result-box {
+      display: none;
+      background-color: #eaf6ff;
+      border: 2px solid #3498db;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 30px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #2c3e50;
+      text-align: center;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.8s ease-out;
+      position: relative;
+    }
+
+    .result-box::before {
+      content: "🎯";
+      font-size: 28px;
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #eaf6ff;
+      padding: 0 8px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media screen and (min-width: 800px) {
+      .quiz-box { max-width: 800px; padding: 32px; }
+    }
+
+    @media screen and (max-width: 400px) {
+      body { font-size: 16px !important; }
+      .question { font-size: 18px !important; }
+      .option-button { font-size: 18px !important; padding: 16px !important; }
+      .feedback, .result-box { font-size: 16px !important; }
+      .result-box::before { font-size: 24px !important; }
+    }
+  </style>
 </head>
 <body>
-  <div id="quiz-container"></div>
-  <div id="result-box" class="quiz-box" style="display:none;"></div>
 
-  <script>
-    const quizzes = [
-      {
-        question: "Pythonでリストの要素数を取得する関数はどれ？",
-        choices: ["count()", "len()", "size()", "length()"],
-        answer: "len()",
-        explanation: "リストの要素数を取得する標準関数です。"
-      },
-      {
-        question: "Pythonで変数に整数を代入する正しい方法は？",
-        choices: ["int a = 5", "a := 5", "a = 5", "let a = 5"],
-        answer: "a = 5",
-        explanation: "Pythonでは代入に = を使用します。"
-      },
-      {
-        question: "文字列を整数に変換する関数はどれ？",
-        choices: ["str()", "int()", "float()", "bool()"],
-        answer: "int()",
-        explanation: "int() は文字列や小数を整数に変換します。"
-      },
-      {
-        question: "リストの末尾に要素を追加する関数はどれ？",
-        choices: ["insert()", "extend()", "add()", "append()"],
-        answer: "append()",
-        explanation: "append() はリストの末尾に要素を追加します。"
-      },
-      {
-        question: "Pythonの繰り返し処理に使われる構文はどれ？",
-        choices: ["repeat", "loop", "for", "foreach"],
-        answer: "for",
-        explanation: "for文はPythonの標準的な繰り返し構文です。"
-      },
-      {
-        question: "関数を定義するためのキーワードはどれ？",
-        choices: ["function", "define", "def", "fn"],
-        answer: "def",
-        explanation: "def を使って関数を定義します。"
-      },
-      {
-        question: "条件分岐に使うキーワードはどれ？",
-        choices: ["when", "if", "check", "case"],
-        answer: "if",
-        explanation: "if 文は条件に応じた処理を行うために使います。"
-      },
-      {
-        question: "Pythonで小数を表すデータ型はどれ？",
-        choices: ["int", "str", "float", "decimal"],
-        answer: "float",
-        explanation: "float は小数を扱うデータ型です。"
-      },
-      {
-        question: "リストの特定の要素を削除する関数はどれ？",
-        choices: ["remove()", "delete()", "pop()", "cut()"],
-        answer: "remove()",
-        explanation: "remove() は指定した値の要素を削除します。"
-      },
-      {
-        question: "Pythonでコメントを書くには？",
-        choices: ["-- コメント", "// コメント", "# コメント", "/* コメント */"],
-        answer: "# コメント",
-        explanation: "# を使ってコメントを記述します。"
-      }
-    ];
+<div id="quiz-container"></div>
+<div id="result" class="result-box"></div>
 
-    let correctCount = 0;
-    let answeredCount = 0;
+<script>
+const quizData = [
+  {
+    question: "Pythonでリストの長さを調べる関数は？",
+    options: ["count()", "size()", "length()", "len()"],
+    answer: 3
+  },
+  {
+    question: "Pythonのキーワードでないものは？",
+    options: ["def", "class", "function", "if"],
+    answer: 2
+  },
+  {
+    question: "文字列を数値に変換する関数は？",
+    options: ["int()", "str()", "float()", "input()"],
+    answer: 0
+  },
+  {
+    question: "条件分岐に使うキーワードは？",
+    options: ["for", "while", "if", "def"],
+    answer: 2
+  },
+  {
+    question: "繰り返し処理に使うキーワードは？",
+    options: ["if", "elif", "while", "class"],
+    answer: 2
+  },
+  {
+    question: "関数を定義するキーワードは？",
+    options: ["def", "define", "function", "func"],
+    answer: 0
+  },
+  {
+    question: "辞書型で値を取得する方法は？",
+    options: ["get()", "select()", "find()", "read()"],
+    answer: 0
+  },
+  {
+    question: "タプルはどのように作る？",
+    options: ["[1, 2]", "(1, 2)", "{1, 2}", "<1, 2>"],
+    answer: 1
+  },
+  {
+    question: "リストの末尾に要素を追加するには？",
+    options: ["insert()", "add()", "append()", "push()"],
+    answer: 2
+  },
+  {
+    question: "Pythonでの論理積は？",
+    options: ["and", "or", "not", "xor"],
+    answer: 0
+  }
+];
 
-    const container = document.getElementById("quiz-container");
-    const resultBox = document.getElementById("result-box");
+let score = 0;
+let answered = 0;
 
-    quizzes.forEach((quiz, index) => {
-      const box = document.createElement("div");
-      box.className = "quiz-box";
+const container = document.getElementById("quiz-container");
+const resultBox = document.getElementById("result");
 
-      const q = document.createElement("div");
-      q.className = "question";
-      q.innerText = `${index + 1}問目 ${quiz.question}`;
-      box.appendChild(q);
+quizData.forEach((quiz, index) => {
+  const box = document.createElement("div");
+  box.className = "quiz-box";
 
-      const choiceDiv = document.createElement("div");
-      choiceDiv.className = "choices";
+  const question = document.createElement("div");
+  question.className = "question";
+  question.textContent = `${index + 1}問目 ${quiz.question}`;
+  box.appendChild(question);
 
-      quiz.choices.forEach(choice => {
-        const btn = document.createElement("button");
-        btn.innerText = choice;
-        btn.onclick = () => checkAnswer(btn, choice === quiz.answer, explanationDiv, quiz.answer, quiz.explanation, choiceDiv);
-        choiceDiv.appendChild(btn);
-      });
-
-      const explanationDiv = document.createElement("div");
-      explanationDiv.className = "answer";
-
-      box.appendChild(choiceDiv);
-      box.appendChild(explanationDiv);
-      container.appendChild(box);
-    });
-
-    function checkAnswer(btn, isCorrect, answerBox, answer, explanation, choiceDiv) {
-      if (answerBox.classList.contains("show")) return;
-      answerBox.classList.add("show");
-      const buttons = choiceDiv.querySelectorAll("button");
-      buttons.forEach(button => {
-        button.disabled = true;
-        if (button.innerText.trim() === answer) {
-          button.classList.add("correct");
-        } else if (button === btn && !isCorrect) {
-          button.classList.add("incorrect");
-        }
-      });
-
-      if (isCorrect) {
-        correctCount++;
-        answerBox.className = "answer correct show";
-        answerBox.innerHTML = `正解は <strong>${answer}</strong> です。${explanation}`;
+  quiz.options.forEach((opt, i) => {
+    const button = document.createElement("button");
+    button.className = "option-button";
+    button.textContent = opt;
+    button.onclick = () => {
+      if (button.classList.contains("correct") || button.classList.contains("incorrect")) return;
+      answered++;
+      if (i === quiz.answer) {
+        button.classList.add("correct");
+        score++;
       } else {
-        answerBox.className = "answer incorrect show";
-        answerBox.innerHTML = `<strong>不正解です。</strong> 正解は <strong>${answer}</strong> です。${explanation}`;
+        button.classList.add("incorrect");
+        const correctButton = box.querySelectorAll("button")[quiz.answer];
+        correctButton.classList.add("correct");
       }
-
-      answeredCount++;
-      if (answeredCount === quizzes.length) {
+      if (answered === quizData.length) {
         resultBox.style.display = "block";
-        resultBox.innerHTML = `<h2>結果</h2><p>10問中 <strong>${correctCount}問正解</strong> です。</p>`;
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        resultBox.textContent = `🎯 ${quizData.length}問中${score}問正解`;
       }
-    }
-  </script>
+    };
+    box.appendChild(button);
+  });
+
+  container.appendChild(box);
+});
+</script>
+
 </body>
 </html>
